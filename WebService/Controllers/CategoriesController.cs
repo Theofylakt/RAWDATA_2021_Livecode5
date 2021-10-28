@@ -80,6 +80,16 @@ namespace WebService.Controllers
             return NoContent();
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCategory(int id)
+        {
+            if(!_dataService.DeleteCategory(id))
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
 
         private CategoryViewModel GetCategoryViewModel(Category category)
         {
