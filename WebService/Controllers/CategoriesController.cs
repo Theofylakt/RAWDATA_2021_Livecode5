@@ -1,10 +1,12 @@
 ﻿using DataServiceLib;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebService.ViewModels;
 
 namespace WebService.Controllers
 {
@@ -13,24 +15,68 @@ namespace WebService.Controllers
     public class CategoriesController : Controller
     {
 
-        IDataService dataService = new DataService();
+        IDataService _dataService;
+        LinkGenerator _linkGenerator;
+
+        public CategoriesController(IDataService dataService, LinkGenerator linkGenerator)
+        {
+            _dataService = dataService;
+            _linkGenerator = linkGenerator;
+        }
                
         [HttpGet]
-        public JsonResult GetCategories()
+        public IActionResult GetCategories()
         {
-            var categories = dataService.GetCategories();
-            return new JsonResult(categories);
+            var categories = _dataService.GetCategories();
+
+            return Ok(categories.Select(x => GetCategoryViewModel(x)));
         }
 
         // api/categories/id
-        [HttpGet("{id}")]
-        public JsonResult GetCategory(int id)
+        [HttpGet("{id}", Name = nameof(GetCategory))]
+        public IActionResult GetCategory(int id)
         {
-            var category = dataService.GetCategory(id);
+            var category = _dataService.GetCategory(id);
 
-            return new JsonResult(category);
+            if(category == null)
+            {
+                return NotFound();
+            }
+
+            CategoryViewModel model = GetCategoryViewModel(category);
+
+            return Ok(model);
         }
-        
-        
+
+        [HttpPost]
+        public IActionResult CreateCategory(CreateCategoryViewModel model)
+        {
+            var category = new Category
+            {
+                Name = model.Name,
+                Description = model.Description
+            };
+
+            _dataService.CreateCategory(category);
+
+            return Created("", GetCategoryViewModel(category));
+
+        }
+
+
+        private CategoryViewModel GetCategoryViewModel(Category category)
+        {
+            return new CategoryViewModel
+            {
+                
+                Url = _linkGenerator.GetUriByName(HttpContext, nameof(GetCategory), new { category.Id }),
+                Name = category.Name,
+                Desc = category.Description
+            };
+        }
+
+        //[HttpPost]
+        //public 
+
     }
 }
