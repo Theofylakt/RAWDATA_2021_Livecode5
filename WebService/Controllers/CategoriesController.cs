@@ -23,7 +23,7 @@ namespace WebService.Controllers
             _dataService = dataService;
             _linkGenerator = linkGenerator;
         }
-               
+
         [HttpGet]
         public IActionResult GetCategories()
         {
@@ -38,7 +38,7 @@ namespace WebService.Controllers
         {
             var category = _dataService.GetCategory(id);
 
-            if(category == null)
+            if (category == null)
             {
                 return NotFound();
             }
@@ -60,7 +60,24 @@ namespace WebService.Controllers
             _dataService.CreateCategory(category);
 
             return Created("", GetCategoryViewModel(category));
+        }
 
+        [HttpPut("{id}")]
+        public IActionResult UpdateCategory(int id, CreateCategoryViewModel model)
+        {
+            var category = new Category
+            {
+                Id = id,
+                Name = model.Name,
+                Description = model.Description
+            };
+
+            if (!_dataService.UpdateCategory(category))
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
 
 
@@ -68,7 +85,7 @@ namespace WebService.Controllers
         {
             return new CategoryViewModel
             {
-                
+
                 Url = _linkGenerator.GetUriByName(HttpContext, nameof(GetCategory), new { category.Id }),
                 Name = category.Name,
                 Desc = category.Description
