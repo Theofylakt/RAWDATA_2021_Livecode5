@@ -96,14 +96,17 @@ namespace WebService.Controllers
             return new CategoryViewModel
             {
 
-                Url = _linkGenerator.GetUriByName(HttpContext, nameof(GetCategory), new { category.Id }),
+                Url = GetUrl(category),
                 Name = category.Name,
                 Desc = category.Description
             };
         }
 
-        //[HttpPost]
-        //public 
+        private string GetUrl(Category category)
+        {
+            return _linkGenerator.GetUriByName(HttpContext, nameof(GetCategory), new { category.Id });
+        }
+
 
     }
 }
