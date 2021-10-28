@@ -59,7 +59,7 @@ namespace WebService.Controllers
 
             _dataService.CreateCategory(category);
 
-            return Created("", GetCategoryViewModel(category));
+            return Created(GetUrl(category), GetCategoryViewModel(category));
         }
 
         [HttpPut("{id}")]
