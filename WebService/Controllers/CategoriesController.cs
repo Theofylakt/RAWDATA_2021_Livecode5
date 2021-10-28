@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataServiceLib;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,25 @@ namespace WebService.Controllers
     [Route("api/categories")]
     public class CategoriesController : Controller
     {
+
+        IDataService dataService = new DataService();
                
-        public string DoSomething()
+        [HttpGet]
+        public JsonResult GetCategories()
         {
-            return "Hello from controller";
+            var categories = dataService.GetCategories();
+            return new JsonResult(categories);
         }
+
+        // api/categories/id
+        [HttpGet("{id}")]
+        public JsonResult GetCategory(int id)
+        {
+            var category = dataService.GetCategory(id);
+
+            return new JsonResult(category);
+        }
+        
+        
     }
 }
